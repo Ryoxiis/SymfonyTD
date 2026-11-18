@@ -40,10 +40,10 @@ img { max-width: 100%; }
 
 /* ---------- Page ---------- */
 .page {
-    max-width: 1180px;
-    margin: 0 auto;
+    /* Pleine largeur de l'écran */
+    width: 100%;
+    min-height: 100vh;
     background: var(--noir);
-    box-shadow: 0 0 60px rgba(0,0,0,.6);
     display: grid;
     grid-template-columns: var(--sidebar) 1fr;
     grid-template-rows: 1fr auto;
