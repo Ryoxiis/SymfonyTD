@@ -40,8 +40,9 @@ class ProduitRepository extends ServiceEntityRepository
         }
 
         if ($motCle) {
-            $qb->andWhere('p.nom LIKE :motCle OR p.description LIKE :motCle')
-                ->setParameter('motCle', '%'.$motCle.'%');
+            // LOWER() : recherche insensible aux majuscules, en MySQL comme en PostgreSQL
+            $qb->andWhere('LOWER(p.nom) LIKE :motCle OR LOWER(p.description) LIKE :motCle')
+                ->setParameter('motCle', '%'.mb_strtolower($motCle).'%');
         }
 
         return $qb->getQuery()->getResult();

@@ -1,0 +1,39 @@
+{% import 'partials/_macros.html.twig' as ui %}
+<article class="fiche">
+    <a class="fiche__fermer" href="{{ path('app_animaux', {espece: animal.espece.id}) }}" data-action="modale#fermer:prevent" aria-label="Fermer">✕</a>
+
+    <div class="fiche__infos">
+        <h1>{{ animal.nom }}</h1>
+        <p class="fiche__sous-titre">
+            {{ animal.espece.nom }}{% if animal.race %} · {{ animal.race }}{% endif %}
+            {{ ui.badge(animal, 'animal') }}
+        </p>
+
+        {% if animal.description %}
+            <div class="fiche__description">{{ animal.description|nl2br }}</div>
+        {% endif %}
+
+        <table class="specs">
+            <tr><th>Espèce</th><td>{{ animal.espece.nom }}</td></tr>
+            <tr><th>Race</th><td>{{ animal.race ?: 'Non précisée' }}</td></tr>
+            <tr><th>Sexe</th><td>{{ animal.sexe ?: 'Non déterminé' }}</td></tr>
+            <tr><th>Âge</th><td>{{ age ?: 'Inconnu' }}</td></tr>
+            {% if animal.dateNaissance %}
+                <tr><th>Date de naissance</th><td>{{ animal.dateNaissance|date('d/m/Y') }}</td></tr>
+            {% endif %}
+            <tr><th>Disponibilité</th><td>{{ animal.disponible ? 'À adopter' : 'Déjà adopté' }}</td></tr>
+        </table>
+
+        <form class="fiche__achat" method="post" action="{{ path('app_panier_ajouter_animal', {id: animal.id}) }}"
+              data-action="panier#ajouter" data-turbo-frame="_top">
+            <span class="fiche__prix">{{ ui.prix(animal.prix) }}</span>
+            <input type="hidden" name="_token" value="{{ csrf_token('panier') }}">
+            <button class="bouton" type="submit" {{ not animal.disponible ? 'disabled' }}>Ajouter au panier</button>
+        </form>
+        <p class="fiche__lien-page"><a href="{{ path('app_animal_show', {id: animal.id}) }}" data-turbo-frame="_top">Voir la page complète ›</a></p>
+    </div>
+
+    <div class="fiche__image">
+        {{ ui.visuel(animal.photo, animal.nom) }}
+    </div>
+</article>

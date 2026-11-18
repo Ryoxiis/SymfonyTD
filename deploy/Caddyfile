@@ -1,0 +1,14 @@
+# Configuration du serveur web FrankenPHP (basé sur Caddy)
+{
+	frankenphp
+	# L'hébergeur gère déjà le HTTPS : le serveur écoute en HTTP simple
+	auto_https off
+	admin off
+}
+
+# Port fourni par l'hébergeur (variable PORT), 8080 par défaut
+:{$PORT:8080} {
+	root * /app/public
+	encode zstd br gzip
+	php_server
+}

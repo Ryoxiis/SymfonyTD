@@ -5,7 +5,7 @@
 
 {% block body %}
     <section class="bloc">
-        <h1 class="titre-section">
+        <h1 class="titre-section apparition">
             {% if recherche %}
                 Résultats pour « {{ recherche }} »
             {% else %}
@@ -40,7 +40,7 @@
 
     {% if recherche and animaux is not empty %}
         <section class="bloc">
-            <h2 class="titre-section">Animaux <small>{{ animaux|length }}</small></h2>
+            <h2 class="titre-section apparition">Animaux <small>{{ animaux|length }}</small></h2>
             <div class="grille">
                 {% for animal in animaux %}
                     {{ ui.carte(animal, 'animal') }}

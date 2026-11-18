@@ -1,0 +1,13 @@
+{# Galerie horizontale avec flèches et défilement automatique.
+   Variables attendues : items (liste), type ('produit' ou 'animal') #}
+{% import 'partials/_macros.html.twig' as ui %}
+<div class="galerie-bloc" data-controller="galerie"
+     data-action="mouseenter->galerie#arreter mouseleave->galerie#demarrer focusin->galerie#arreter">
+    <button type="button" class="galerie__fleche galerie__fleche--gauche" data-action="galerie#precedent" aria-label="Précédent">‹</button>
+    <div class="galerie" data-galerie-target="piste">
+        {% for item in items %}
+            {{ ui.carte(item, type) }}
+        {% endfor %}
+    </div>
+    <button type="button" class="galerie__fleche galerie__fleche--droite" data-action="galerie#suivant" aria-label="Suivant">›</button>
+</div>

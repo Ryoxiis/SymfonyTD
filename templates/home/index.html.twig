@@ -4,33 +4,36 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-    {# ---------- Bannière principale ---------- #}
-    <section class="hero">
-        <div class="hero__texte">
-            <div class="hero__marque"><strong>Fauna</strong> Prime</div>
-            <h1 class="hero__slogan">
+    {# ---------- Bannière principale : profondeur à la souris + balayage de lumière ---------- #}
+    <section class="hero" data-controller="parallaxe"
+             data-action="mousemove->parallaxe#bouger mouseleave->parallaxe#reinitialiser">
+        <div class="hero__texte" data-parallaxe-target="couche" data-profondeur="10">
+            <div class="hero__marque"><strong>RyoPets</strong> Prime</div>
+            <h1 class="hero__slogan" data-controller="lettres">
                 <span class="gros">Mieux nourri</span>
                 <span class="petit">va</span>
                 <span class="gros">plus loin</span>
             </h1>
             {% if vedette %}
                 <p class="hero__produit">
-                    {{ vedette.nom }} · {{ ui.prix(vedette.prix) }}<br>
-                    <a href="{{ path('app_produit_show', {id: vedette.id}) }}">Découvrir le produit →</a>
+                    {{ vedette.nom }} · <span class="prix-or">{{ ui.prix(vedette.prix) }}</span><br>
+                    <a href="{{ path('app_produit_show', {id: vedette.id}) }}" data-turbo-frame="modale">Découvrir le produit ›</a>
                 </p>
             {% endif %}
         </div>
-        <div class="hero__image">
+        <div class="hero__image" data-parallaxe-target="couche" data-profondeur="28">
             {% if vedette %}
                 {{ ui.visuel(vedette.photo, vedette.nom) }}
-                <span class="hero__badge">Nouvelle<br>recette</span>
             {% endif %}
         </div>
+        {% if vedette %}
+            <span class="hero__badge" data-parallaxe-target="couche" data-profondeur="45">Nouvelle<br>recette</span>
+        {% endif %}
     </section>
 
     {# ---------- Tuiles ---------- #}
     <section class="tuiles">
-        <a class="tuile tuile--large" href="{{ path('app_animaux') }}">
+        <a class="tuile tuile--large apparition" href="{{ path('app_animaux') }}">
             {% if animaux|length > 0 %}{{ ui.visuel(animaux[0].photo, animaux[0].nom) }}{% endif %}
             <span class="tuile__texte">
                 <span class="tuile__titre">Nos animaux</span>
@@ -41,7 +44,7 @@
         {% for nom in ['Alimentaire', 'Loisirs'] %}
             {% set categorie = categoriesParNom[nom] ?? null %}
             {% set exemple = exemples[nom] ?? null %}
-            <a class="tuile" href="{{ categorie ? path('app_catalogue', {categorie: categorie.id}) : path('app_catalogue') }}">
+            <a class="tuile apparition" href="{{ categorie ? path('app_catalogue', {categorie: categorie.id}) : path('app_catalogue') }}">
                 {% if exemple %}{{ ui.visuel(exemple.photo, exemple.nom) }}{% endif %}
                 <span class="tuile__texte">
                     <span class="tuile__titre">{{ nom }}</span>
@@ -51,7 +54,7 @@
         {% endfor %}
 
         {% set fashion = categoriesParNom['Fashion'] ?? null %}
-        <a class="tuile tuile--atelier" href="{{ fashion ? path('app_catalogue', {categorie: fashion.id}) : path('app_catalogue') }}">
+        <a class="tuile tuile--atelier apparition" href="{{ fashion ? path('app_catalogue', {categorie: fashion.id}) : path('app_catalogue') }}">
             <span class="etiquette">Nouveau</span>
             <span class="tuile__titre">l'atelier</span>
             <p>Manteaux, colliers et nœuds faits pour durer : la collection Fashion de la saison.</p>
@@ -61,15 +64,11 @@
 
     {# ---------- Galerie ---------- #}
     <section class="bloc">
-        <h2 class="titre-section">Galerie <small>{{ galerie|length }} produits</small></h2>
+        <h2 class="titre-section apparition">Galerie <small>{{ galerie|length }} produits</small></h2>
         {% if galerie is empty %}
             <p class="vide">Le catalogue est vide. Lance <code>symfony console app:demo</code> pour ajouter des données de démonstration.</p>
         {% else %}
-            <div class="galerie">
-                {% for produit in galerie %}
-                    {{ ui.carte(produit, 'produit') }}
-                {% endfor %}
-            </div>
+            {% include 'partials/_galerie.html.twig' with {items: galerie, type: 'produit'} %}
         {% endif %}
     </section>
 {% endblock %}

@@ -13,3 +13,10 @@ when@test:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+
+# En production (Fly.io), les visiteurs passent par le proxy de Fly qui gère le HTTPS :
+# on lui fait confiance pour connaître la vraie adresse et le protocole (https) du visiteur.
+when@prod:
+    framework:
+        trusted_proxies: '%env(TRUSTED_PROXIES)%'
+        trusted_headers: ['x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-port']

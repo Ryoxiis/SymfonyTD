@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page introuvable{% endblock %}
+
+{% block body %}
+    <section class="erreur-404">
+        <p class="erreur-404__code">404</p>
+        {% include 'partials/_logo.svg.twig' with {classe_logo: 'erreur-404__patte'} only %}
+        <h1>Ce chiot s'est perdu…</h1>
+        <p>La page que vous cherchez a dû filer après un écureuil.</p>
+        <a class="bouton" href="{{ path('app_home') }}">Retour à l'accueil</a>
+        <a class="bouton bouton--sombre" href="{{ path('app_animaux') }}">Voir nos animaux</a>
+    </section>
+{% endblock %}

@@ -34,8 +34,9 @@ class AnimalRepository extends ServiceEntityRepository
         }
 
         if ($motCle) {
-            $qb->andWhere('a.nom LIKE :motCle OR a.race LIKE :motCle OR a.description LIKE :motCle')
-                ->setParameter('motCle', '%'.$motCle.'%');
+            // LOWER() : recherche insensible aux majuscules, en MySQL comme en PostgreSQL
+            $qb->andWhere('LOWER(a.nom) LIKE :motCle OR LOWER(a.race) LIKE :motCle OR LOWER(a.description) LIKE :motCle')
+                ->setParameter('motCle', '%'.mb_strtolower($motCle).'%');
         }
 
         return $qb->getQuery()->getResult();

@@ -7,7 +7,7 @@
             <a href="{{ path('app_register') }}">Créer un compte</a>
         {% endif %}
         <a class="topbar__panier" href="{{ path('app_panier') }}">
-            Panier <span class="pastille">{{ panier_quantite() }}</span>
+            Panier <span class="pastille" data-panier-target="pastille">{{ panier_quantite() }}</span>
         </a>
     </div>
     <form class="recherche" action="{{ path('app_catalogue') }}" method="get" role="search">

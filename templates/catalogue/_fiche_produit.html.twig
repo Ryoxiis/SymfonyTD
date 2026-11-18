@@ -1,0 +1,41 @@
+{% import 'partials/_macros.html.twig' as ui %}
+<article class="fiche">
+    <a class="fiche__fermer" href="{{ path('app_catalogue', {categorie: produit.categorie.id}) }}" data-action="modale#fermer:prevent" aria-label="Fermer">✕</a>
+
+    <div class="fiche__infos">
+        <h1>{{ produit.nom }}</h1>
+        <p class="fiche__sous-titre">
+            {{ produit.categorie.nom }} · pour {{ produit.especes|map(e => e.nom)|join(', ') ?: 'tous les animaux' }}
+            {{ ui.badge(produit, 'produit') }}
+        </p>
+
+        {% if produit.description %}
+            <div class="fiche__description">{{ produit.description|nl2br }}</div>
+        {% endif %}
+
+        <table class="specs">
+            <tr><th>Catégorie</th><td>{{ produit.categorie.nom }}</td></tr>
+            <tr><th>Espèces</th><td>{{ produit.especes|map(e => e.nom)|join(', ') ?: 'Toutes' }}</td></tr>
+            {% if produit.poids %}
+                <tr><th>Poids</th><td>{{ produit.poids >= 1000 ? (produit.poids / 1000)|number_format(1, ',', ' ') ~ ' kg' : produit.poids|number_format(0, ',', ' ') ~ ' g' }}</td></tr>
+            {% endif %}
+            {% if produit.dateExpiration %}
+                <tr><th>À consommer avant</th><td>{{ produit.dateExpiration|date('d/m/Y') }}</td></tr>
+            {% endif %}
+            <tr><th>Disponibilité</th><td>{{ produit.stock > 0 ? produit.stock ~ ' en stock' : 'Rupture de stock' }}</td></tr>
+        </table>
+
+        <form class="fiche__achat" method="post" action="{{ path('app_panier_ajouter_produit', {id: produit.id}) }}"
+              data-action="panier#ajouter" data-turbo-frame="_top">
+            <span class="fiche__prix">{{ ui.prix(produit.prix) }}</span>
+            <input type="hidden" name="_token" value="{{ csrf_token('panier') }}">
+            <input type="number" name="quantite" value="1" min="1" max="{{ max(produit.stock, 1) }}" aria-label="Quantité">
+            <button class="bouton" type="submit" {{ produit.stock < 1 ? 'disabled' }}>Ajouter au panier</button>
+        </form>
+        <p class="fiche__lien-page"><a href="{{ path('app_produit_show', {id: produit.id}) }}" data-turbo-frame="_top">Voir la page complète ›</a></p>
+    </div>
+
+    <div class="fiche__image">
+        {{ ui.visuel(produit.photo, produit.nom) }}
+    </div>
+</article>

@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -35,9 +36,21 @@ class DemoCommand extends Command
         parent::__construct();
     }
 
+    protected function configure(): void
+    {
+        // Utilisée au démarrage du serveur en production : ne remplit la base que si elle est vide
+        $this->addOption('si-vide', null, InputOption::VALUE_NONE, 'Ne fait rien si le catalogue contient déjà des données');
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+
+        if ($input->getOption('si-vide') && $this->em->getRepository(Espece::class)->count([]) > 0) {
+            $io->note('Le catalogue contient déjà des données : rien à faire.');
+
+            return Command::SUCCESS;
+        }
 
         if (!$io->confirm('Le catalogue et les paniers existants vont être supprimés. Continuer ?', true)) {
             return Command::SUCCESS;
@@ -76,7 +89,7 @@ class DemoCommand extends Command
             ['Mélange de graines premium', 'Graines sélectionnées et fruits secs pour oiseaux et petits rongeurs.', '9.90', 35, self::UNSPLASH.'photo-1532598187460-98fe8826d1e2'.self::FORMAT, 1000, '+12 months', 'Alimentaire', ['Oiseau', 'Rongeur']],
             ['Balle rebond indestructible', 'Caoutchouc naturel ultra-résistant, rebond imprévisible. Flotte dans l\'eau.', '12.90', 50, self::UNSPLASH.'photo-1612502169027-5a379283f9c0'.self::FORMAT, 180, null, 'Loisirs', ['Chien']],
             ['Canne à plumes', 'Canne télescopique avec plumes et clochette pour réveiller l\'instinct de chasse.', '8.50', 45, self::UNSPLASH.'photo-1637066470832-f4ae1709d75b'.self::FORMAT, 60, null, 'Loisirs', ['Chat']],
-            ['Arbre à chat Tour 150 cm', "Quatre plateformes, deux niches et des poteaux en sisal.\nStructure lestée, très stable.", '129.00', 6, self::UNSPLASH.'photo-1601758065893-25c11bfa69b5'.self::FORMAT, 18000, null, 'Loisirs', ['Chat']],
+            ['Arbre à chat Tour 150 cm', "Quatre plateformes, deux niches et des poteaux en sisal.\nStructure lestée, très stable.", '129.00', 3, self::UNSPLASH.'photo-1601758065893-25c11bfa69b5'.self::FORMAT, 18000, null, 'Loisirs', ['Chat']],
             ['Roue silencieuse 28 cm', 'Roue d\'exercice à roulement silencieux pour hamsters et gerbilles.', '24.90', 15, self::UNSPLASH.'photo-1657076761228-bdb21cf0bc7c'.self::FORMAT, 700, null, 'Loisirs', ['Rongeur']],
             ['Manteau imperméable Night', 'Manteau doublé polaire, bandes réfléchissantes pour les sorties du soir.', '39.90', 20, self::UNSPLASH.'photo-1530041539828-114de669390e'.self::FORMAT, 250, null, 'Fashion', ['Chien']],
             ['Collier cuir & or', 'Cuir pleine fleur et boucle dorée. Taille ajustable.', '29.00', 30, self::UNSPLASH.'photo-1667716705760-233650f8f3fe'.self::FORMAT, 90, null, 'Fashion', ['Chien', 'Chat']],
@@ -128,9 +141,9 @@ class DemoCommand extends Command
         }
 
         // ---------- Compte de démonstration ----------
-        $demo = $this->em->getRepository(Utilisateur::class)->findOneBy(['email' => 'demo@fauna.fr']);
+        $demo = $this->em->getRepository(Utilisateur::class)->findOneBy(['email' => 'demo@ryopets.fr']);
         if (!$demo) {
-            $demo = (new Utilisateur())->setEmail('demo@fauna.fr');
+            $demo = (new Utilisateur())->setEmail('demo@ryopets.fr');
             $demo->setPassword($this->hasher->hashPassword($demo, 'demo1234'));
             $this->em->persist($demo);
         }
@@ -139,7 +152,7 @@ class DemoCommand extends Command
 
         $io->success([
             sprintf('%d produits et %d animaux ajoutés.', count($produits), count($animaux)),
-            'Compte de démonstration : demo@fauna.fr / demo1234',
+            'Compte de démonstration : demo@ryopets.fr / demo1234',
         ]);
 
         return Command::SUCCESS;

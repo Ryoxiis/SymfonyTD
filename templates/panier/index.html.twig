@@ -5,7 +5,7 @@
 
 {% block body %}
     <section class="bloc">
-        <h1 class="titre-section">Mon panier <small>{{ panier_quantite() }} article{{ panier_quantite() > 1 ? 's' }}</small></h1>
+        <h1 class="titre-section apparition">Mon panier <small>{{ panier_quantite() }} article{{ panier_quantite() > 1 ? 's' }}</small></h1>
 
         {% if panier.lignes is empty %}
             <p class="vide">Votre panier est vide. <a href="{{ path('app_catalogue') }}">Parcourir la boutique</a></p>

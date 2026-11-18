@@ -1,53 +1,14 @@
 {% extends 'base.html.twig' %}
-{% import 'partials/_macros.html.twig' as ui %}
 
 {% block title %}{{ produit.nom }}{% endblock %}
 
 {% block body %}
-    <article class="fiche">
-        <a class="fiche__fermer" href="{{ path('app_catalogue', {categorie: produit.categorie.id}) }}" aria-label="Fermer">✕</a>
-
-        <div>
-            <h1>{{ produit.nom }}</h1>
-            <p class="fiche__sous-titre">{{ produit.categorie.nom }} · pour {{ produit.especes|map(e => e.nom)|join(', ') ?: 'tous les animaux' }}</p>
-
-            {% if produit.description %}
-                <div class="fiche__description">{{ produit.description|nl2br }}</div>
-            {% endif %}
-
-            <table class="specs">
-                <tr><th>Catégorie</th><td>{{ produit.categorie.nom }}</td></tr>
-                <tr><th>Espèces</th><td>{{ produit.especes|map(e => e.nom)|join(', ') ?: 'Toutes' }}</td></tr>
-                {% if produit.poids %}
-                    <tr><th>Poids</th><td>{{ produit.poids >= 1000 ? (produit.poids / 1000)|number_format(1, ',', ' ') ~ ' kg' : produit.poids|number_format(0, ',', ' ') ~ ' g' }}</td></tr>
-                {% endif %}
-                {% if produit.dateExpiration %}
-                    <tr><th>À consommer avant</th><td>{{ produit.dateExpiration|date('d/m/Y') }}</td></tr>
-                {% endif %}
-                <tr><th>Disponibilité</th><td>{{ produit.stock > 0 ? produit.stock ~ ' en stock' : 'Rupture de stock' }}</td></tr>
-            </table>
-
-            <form class="fiche__achat" method="post" action="{{ path('app_panier_ajouter_produit', {id: produit.id}) }}">
-                <span class="fiche__prix">{{ ui.prix(produit.prix) }}</span>
-                <input type="hidden" name="_token" value="{{ csrf_token('panier') }}">
-                <input type="number" name="quantite" value="1" min="1" max="{{ max(produit.stock, 1) }}" aria-label="Quantité">
-                <button class="bouton" type="submit" {{ produit.stock < 1 ? 'disabled' }}>Ajouter au panier</button>
-            </form>
-        </div>
-
-        <div class="fiche__image">
-            {{ ui.visuel(produit.photo, produit.nom) }}
-        </div>
-    </article>
+    {% include 'catalogue/_fiche_produit.html.twig' %}
 
     {% if similaires is not empty %}
         <section class="bloc">
-            <h2 class="titre-section">Dans la même catégorie</h2>
-            <div class="galerie">
-                {% for p in similaires %}
-                    {{ ui.carte(p, 'produit') }}
-                {% endfor %}
-            </div>
+            <h2 class="titre-section apparition">Dans la même catégorie</h2>
+            {% include 'partials/_galerie.html.twig' with {items: similaires, type: 'produit'} %}
         </section>
     {% endif %}
 {% endblock %}

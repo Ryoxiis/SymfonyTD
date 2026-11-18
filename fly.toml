@@ -1,0 +1,37 @@
+# Configuration Fly.io de RyoPets
+# Le nom de l'application doit être unique sur tout Fly.io :
+# s'il est déjà pris, change-le ici ET dans les commandes de déploiement.
+app = 'ryopets-td'
+
+# Johannesburg : la région la plus proche de Maurice.
+# Si elle n'est pas disponible, utilise 'cdg' (Paris).
+primary_region = 'jnb'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[env]
+  APP_ENV = 'prod'
+  APP_DEBUG = '0'
+  DATABASE_URL = 'sqlite:////data/ryopets.db'
+  TRUSTED_PROXIES = 'REMOTE_ADDR'
+
+# Disque persistant : la base SQLite y est enregistrée et survit aux redéploiements
+[[mounts]]
+  source = 'ryopets_data'
+  destination = '/data'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # La machine s'éteint quand personne ne visite le site (économise les crédits)
+  # et se rallume automatiquement à la première visite (quelques secondes d'attente).
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1

@@ -51,8 +51,16 @@ class CatalogueController extends AbstractController
     }
 
     #[Route('/produit/{id}', name: 'app_produit_show', requirements: ['id' => '\d+'])]
-    public function produit(Produit $produit, ProduitRepository $produitRepository): Response
+    public function produit(Produit $produit, Request $request, ProduitRepository $produitRepository): Response
     {
+        // Demandée par la fenêtre modale : on ne renvoie que la fiche
+        if ('modale' === $request->headers->get('Turbo-Frame')) {
+            return $this->render('catalogue/modale.html.twig', [
+                'fiche' => 'catalogue/_fiche_produit.html.twig',
+                'produit' => $produit,
+            ]);
+        }
+
         $similaires = array_filter(
             $produitRepository->findBy(['categorie' => $produit->getCategorie()], ['prix' => 'DESC'], 7),
             fn (Produit $p) => $p->getId() !== $produit->getId(),
@@ -65,7 +73,7 @@ class CatalogueController extends AbstractController
     }
 
     #[Route('/animal/{id}', name: 'app_animal_show', requirements: ['id' => '\d+'])]
-    public function animal(Animal $animal, ProduitRepository $produitRepository): Response
+    public function animal(Animal $animal, Request $request, ProduitRepository $produitRepository): Response
     {
         // Âge lisible calculé à partir de la date de naissance
         $age = null;
@@ -74,6 +82,14 @@ class CatalogueController extends AbstractController
             $age = $diff->y > 0
                 ? $diff->y.' an'.($diff->y > 1 ? 's' : '')
                 : max(1, $diff->m).' mois';
+        }
+
+        if ('modale' === $request->headers->get('Turbo-Frame')) {
+            return $this->render('catalogue/modale.html.twig', [
+                'fiche' => 'catalogue/_fiche_animal.html.twig',
+                'animal' => $animal,
+                'age' => $age,
+            ]);
         }
 
         return $this->render('catalogue/animal.html.twig', [

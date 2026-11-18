@@ -1,0 +1,11 @@
+# Fichiers à ne pas envoyer dans l'image Docker
+.git
+.env.local
+.env.*.local
+var/
+vendor/
+public/assets/
+public/bundles/
+assets/vendor/
+node_modules/
+tests/

@@ -10,11 +10,24 @@
 
 {% macro prix(montant) %}{{ montant|number_format(2, ',', ' ') }} €{% endmacro %}
 
-{# Carte utilisée dans la galerie et les grilles du catalogue #}
+{# Petit badge d'état : stock faible, rupture, animal déjà adopté #}
+{% macro badge(item, type) %}
+    {% if type == 'animal' %}
+        {% if not item.disponible %}<span class="badge badge--sombre">Adopté</span>{% endif %}
+    {% elseif item.stock < 1 %}
+        <span class="badge badge--sombre">Rupture</span>
+    {% elseif item.stock < 5 %}
+        <span class="badge">Dernières pièces</span>
+    {% endif %}
+{% endmacro %}
+
+{# Carte utilisée dans la galerie et les grilles du catalogue.
+   L'image et « Agrandir » ouvrent la fiche dans la fenêtre modale ; le nom et « Détails » ouvrent la page complète. #}
 {% macro carte(item, type) %}
     {% set route = type == 'animal' ? 'app_animal_show' : 'app_produit_show' %}
-    <article class="carte">
-        <a class="carte__image" href="{{ path(route, {id: item.id}) }}">
+    <article class="carte apparition">
+        <a class="carte__image" href="{{ path(route, {id: item.id}) }}" data-turbo-frame="modale">
+            {{ _self.badge(item, type) }}
             {{ _self.visuel(item.photo, item.nom) }}
         </a>
         <div class="carte__texte">
@@ -25,10 +38,10 @@
                 {% else %}
                     {{ item.categorie.nom }}
                 {% endif %}
-                · <strong>{{ _self.prix(item.prix) }}</strong>
+                · <strong class="prix-or">{{ _self.prix(item.prix) }}</strong>
             </p>
             <p class="carte__liens">
-                <a href="{{ path(route, {id: item.id}) }}">Agrandir</a> · <a href="{{ path(route, {id: item.id}) }}">Détails</a>
+                <a href="{{ path(route, {id: item.id}) }}" data-turbo-frame="modale">Agrandir</a> · <a href="{{ path(route, {id: item.id}) }}">Détails</a>
             </p>
         </div>
     </article>
