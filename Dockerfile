@@ -7,6 +7,12 @@ FROM dunglas/frankenphp:1-php8.4
 # Extensions PHP : PostgreSQL (base sur Render), SQLite, intl, opcache (performances), zip (Composer)
 RUN install-php-extensions pdo_pgsql pdo_sqlite intl opcache zip apcu
 
+# Le binaire frankenphp porte une « capability » Linux (droit d'écouter sur les ports 80/443).
+# Certains hébergeurs, dont Render, refusent d'exécuter un tel binaire (« Operation not permitted »).
+# On en fait une copie sans cette capability : on écoute de toute façon sur un port > 1024.
+RUN cp /usr/local/bin/frankenphp /usr/local/bin/frankenphp.copie \
+    && mv /usr/local/bin/frankenphp.copie /usr/local/bin/frankenphp
+
 # Variables d'environnement de production.
 # DATABASE_URL et APP_SECRET sont fournis par l'hébergeur au démarrage ;
 # la valeur ci-dessous ne sert qu'à construire l'image (aucune connexion n'est faite).
