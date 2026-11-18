@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+{% import 'partials/_macros.html.twig' as ui %}
+
+{% block title %}{{ categorie ? categorie.nom : 'Produits' }}{% endblock %}
+
+{% block body %}
+    <section class="bloc">
+        <h1 class="titre-section">
+            {% if recherche %}
+                Résultats pour « {{ recherche }} »
+            {% else %}
+                {{ categorie ? categorie.nom : 'Tous les produits' }}
+            {% endif %}
+            <small>{{ produits|length }} produit{{ produits|length > 1 ? 's' }}</small>
+        </h1>
+
+        <nav class="filtres" aria-label="Catégories">
+            <a href="{{ path('app_catalogue', {espece: espece ? espece.id : null}) }}" class="{{ categorie is null ? 'actif' }}">Toutes</a>
+            {% for c in nav_categories() %}
+                <a href="{{ path('app_catalogue', {categorie: c.id, espece: espece ? espece.id : null}) }}" class="{{ categorie and categorie.id == c.id ? 'actif' }}">{{ c.nom }}</a>
+            {% endfor %}
+        </nav>
+        <nav class="filtres" aria-label="Espèces">
+            <a href="{{ path('app_catalogue', {categorie: categorie ? categorie.id : null}) }}" class="{{ espece is null ? 'actif' }}">Toutes espèces</a>
+            {% for e in nav_especes() %}
+                <a href="{{ path('app_catalogue', {categorie: categorie ? categorie.id : null, espece: e.id}) }}" class="{{ espece and espece.id == e.id ? 'actif' }}">{{ e.nom }}</a>
+            {% endfor %}
+        </nav>
+
+        {% if produits is empty %}
+            <p class="vide">Aucun produit ne correspond.</p>
+        {% else %}
+            <div class="grille">
+                {% for produit in produits %}
+                    {{ ui.carte(produit, 'produit') }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+    {% if recherche and animaux is not empty %}
+        <section class="bloc">
+            <h2 class="titre-section">Animaux <small>{{ animaux|length }}</small></h2>
+            <div class="grille">
+                {% for animal in animaux %}
+                    {{ ui.carte(animal, 'animal') }}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

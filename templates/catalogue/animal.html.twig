@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+{% import 'partials/_macros.html.twig' as ui %}
+
+{% block title %}{{ animal.nom }}{% endblock %}
+
+{% block body %}
+    <article class="fiche">
+        <a class="fiche__fermer" href="{{ path('app_animaux', {espece: animal.espece.id}) }}" aria-label="Fermer">✕</a>
+
+        <div>
+            <h1>{{ animal.nom }}</h1>
+            <p class="fiche__sous-titre">{{ animal.espece.nom }}{% if animal.race %} · {{ animal.race }}{% endif %}</p>
+
+            {% if animal.description %}
+                <div class="fiche__description">{{ animal.description|nl2br }}</div>
+            {% endif %}
+
+            <table class="specs">
+                <tr><th>Espèce</th><td>{{ animal.espece.nom }}</td></tr>
+                <tr><th>Race</th><td>{{ animal.race ?: 'Non précisée' }}</td></tr>
+                <tr><th>Sexe</th><td>{{ animal.sexe ?: 'Non déterminé' }}</td></tr>
+                <tr><th>Âge</th><td>{{ age ?: 'Inconnu' }}</td></tr>
+                {% if animal.dateNaissance %}
+                    <tr><th>Date de naissance</th><td>{{ animal.dateNaissance|date('d/m/Y') }}</td></tr>
+                {% endif %}
+                <tr><th>Disponibilité</th><td>{{ animal.disponible ? 'À adopter' : 'Déjà adopté' }}</td></tr>
+            </table>
+
+            <form class="fiche__achat" method="post" action="{{ path('app_panier_ajouter_animal', {id: animal.id}) }}">
+                <span class="fiche__prix">{{ ui.prix(animal.prix) }}</span>
+                <input type="hidden" name="_token" value="{{ csrf_token('panier') }}">
+                <button class="bouton" type="submit" {{ not animal.disponible ? 'disabled' }}>Ajouter au panier</button>
+            </form>
+        </div>
+
+        <div class="fiche__image">
+            {{ ui.visuel(animal.photo, animal.nom) }}
+        </div>
+    </article>
+
+    {% if produitsConseilles is not empty %}
+        <section class="bloc">
+            <h2 class="titre-section">Pour bien l'accueillir</h2>
+            <div class="galerie">
+                {% for p in produitsConseilles %}
+                    {{ ui.carte(p, 'produit') }}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

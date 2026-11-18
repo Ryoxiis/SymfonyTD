@@ -1,0 +1,35 @@
+{# Affiche la photo d'un produit ou d'un animal, ou un visuel par défaut.
+   photo peut être une adresse complète (photo Unsplash) ou un nom de fichier rangé dans public/images/catalogue/. #}
+{% macro visuel(photo, alt, classe = '') %}
+    {% if photo %}
+        <img class="visuel {{ classe }}" src="{{ photo starts with 'http' ? photo : asset('images/catalogue/' ~ photo) }}" alt="{{ alt }}" loading="lazy">
+    {% else %}
+        <span class="visuel visuel--vide {{ classe }}" role="img" aria-label="{{ alt }}">🐾</span>
+    {% endif %}
+{% endmacro %}
+
+{% macro prix(montant) %}{{ montant|number_format(2, ',', ' ') }} €{% endmacro %}
+
+{# Carte utilisée dans la galerie et les grilles du catalogue #}
+{% macro carte(item, type) %}
+    {% set route = type == 'animal' ? 'app_animal_show' : 'app_produit_show' %}
+    <article class="carte">
+        <a class="carte__image" href="{{ path(route, {id: item.id}) }}">
+            {{ _self.visuel(item.photo, item.nom) }}
+        </a>
+        <div class="carte__texte">
+            <h3><a href="{{ path(route, {id: item.id}) }}">{{ item.nom }}</a></h3>
+            <p class="carte__meta">
+                {% if type == 'animal' %}
+                    {{ item.espece.nom }}{% if item.race %} · {{ item.race }}{% endif %}
+                {% else %}
+                    {{ item.categorie.nom }}
+                {% endif %}
+                · <strong>{{ _self.prix(item.prix) }}</strong>
+            </p>
+            <p class="carte__liens">
+                <a href="{{ path(route, {id: item.id}) }}">Agrandir</a> · <a href="{{ path(route, {id: item.id}) }}">Détails</a>
+            </p>
+        </div>
+    </article>
+{% endmacro %}

@@ -1,0 +1,16 @@
+<header class="topbar">
+    <div class="topbar__compte">
+        {% if app.user %}
+            <span>{{ app.user.userIdentifier }}</span>
+        {% else %}
+            <a href="{{ path('app_login') }}">Connexion</a>
+            <a href="{{ path('app_register') }}">Créer un compte</a>
+        {% endif %}
+        <a class="topbar__panier" href="{{ path('app_panier') }}">
+            Panier <span class="pastille">{{ panier_quantite() }}</span>
+        </a>
+    </div>
+    <form class="recherche" action="{{ path('app_catalogue') }}" method="get" role="search">
+        <input type="search" name="q" placeholder="RECHERCHE" value="{{ app.request.query.get('q') }}" aria-label="Rechercher">
+    </form>
+</header>

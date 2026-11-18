@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un compte{% endblock %}
+
+{% block body %}
+    <div class="carte-form">
+        <h1>Créer un compte</h1>
+        {{ form_start(form) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.plainPassword.first) }}
+            {{ form_row(form.plainPassword.second) }}
+            {{ form_errors(form.plainPassword) }}
+            <button class="bouton" type="submit">Créer mon compte</button>
+        {{ form_end(form) }}
+        <p class="aide">Déjà inscrit ? <a href="{{ path('app_login') }}">Se connecter</a></p>
+    </div>
+{% endblock %}

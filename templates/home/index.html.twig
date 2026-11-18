@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+{% import 'partials/_macros.html.twig' as ui %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+    {# ---------- Bannière principale ---------- #}
+    <section class="hero">
+        <div class="hero__texte">
+            <div class="hero__marque"><strong>Fauna</strong> Prime</div>
+            <h1 class="hero__slogan">
+                <span class="gros">Mieux nourri</span>
+                <span class="petit">va</span>
+                <span class="gros">plus loin</span>
+            </h1>
+            {% if vedette %}
+                <p class="hero__produit">
+                    {{ vedette.nom }} · {{ ui.prix(vedette.prix) }}<br>
+                    <a href="{{ path('app_produit_show', {id: vedette.id}) }}">Découvrir le produit →</a>
+                </p>
+            {% endif %}
+        </div>
+        <div class="hero__image">
+            {% if vedette %}
+                {{ ui.visuel(vedette.photo, vedette.nom) }}
+                <span class="hero__badge">Nouvelle<br>recette</span>
+            {% endif %}
+        </div>
+    </section>
+
+    {# ---------- Tuiles ---------- #}
+    <section class="tuiles">
+        <a class="tuile tuile--large" href="{{ path('app_animaux') }}">
+            {% if animaux|length > 0 %}{{ ui.visuel(animaux[0].photo, animaux[0].nom) }}{% endif %}
+            <span class="tuile__texte">
+                <span class="tuile__titre">Nos animaux</span>
+                <span class="tuile__lien">Voir la sélection ›</span>
+            </span>
+        </a>
+
+        {% for nom in ['Alimentaire', 'Loisirs'] %}
+            {% set categorie = categoriesParNom[nom] ?? null %}
+            {% set exemple = exemples[nom] ?? null %}
+            <a class="tuile" href="{{ categorie ? path('app_catalogue', {categorie: categorie.id}) : path('app_catalogue') }}">
+                {% if exemple %}{{ ui.visuel(exemple.photo, exemple.nom) }}{% endif %}
+                <span class="tuile__texte">
+                    <span class="tuile__titre">{{ nom }}</span>
+                    <span class="tuile__lien">Découvrir ›</span>
+                </span>
+            </a>
+        {% endfor %}
+
+        {% set fashion = categoriesParNom['Fashion'] ?? null %}
+        <a class="tuile tuile--atelier" href="{{ fashion ? path('app_catalogue', {categorie: fashion.id}) : path('app_catalogue') }}">
+            <span class="etiquette">Nouveau</span>
+            <span class="tuile__titre">l'atelier</span>
+            <p>Manteaux, colliers et nœuds faits pour durer : la collection Fashion de la saison.</p>
+            {% if exemples['Fashion'] ?? null %}{{ ui.visuel(exemples['Fashion'].photo, exemples['Fashion'].nom) }}{% endif %}
+        </a>
+    </section>
+
+    {# ---------- Galerie ---------- #}
+    <section class="bloc">
+        <h2 class="titre-section">Galerie <small>{{ galerie|length }} produits</small></h2>
+        {% if galerie is empty %}
+            <p class="vide">Le catalogue est vide. Lance <code>symfony console app:demo</code> pour ajouter des données de démonstration.</p>
+        {% else %}
+            <div class="galerie">
+                {% for produit in galerie %}
+                    {{ ui.carte(produit, 'produit') }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

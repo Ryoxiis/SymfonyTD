@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+{% import 'partials/_macros.html.twig' as ui %}
+
+{% block title %}Mon panier{% endblock %}
+
+{% block body %}
+    <section class="bloc">
+        <h1 class="titre-section">Mon panier <small>{{ panier_quantite() }} article{{ panier_quantite() > 1 ? 's' }}</small></h1>
+
+        {% if panier.lignes is empty %}
+            <p class="vide">Votre panier est vide. <a href="{{ path('app_catalogue') }}">Parcourir la boutique</a></p>
+        {% else %}
+            <table class="panier">
+                <thead>
+                    <tr>
+                        <th colspan="2">Article</th>
+                        <th>Prix unitaire</th>
+                        <th>Quantité</th>
+                        <th>Sous-total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ligne in panier.lignes %}
+                        {% set article = ligne.produit ?? ligne.animal %}
+                        {% set route = ligne.animal ? 'app_animal_show' : 'app_produit_show' %}
+                        <tr>
+                            <td>{{ ui.visuel(article.photo, article.nom) }}</td>
+                            <td class="panier__nom">
+                                <a href="{{ path(route, {id: article.id}) }}">{{ article.nom }}</a>
+                                <small>{{ ligne.animal ? ligne.animal.espece.nom ~ ' · animal' : ligne.produit.categorie.nom }}</small>
+                            </td>
+                            <td>{{ ui.prix(article.prix) }}</td>
+                            <td>
+                                {% if ligne.animal %}
+                                    1 <small>(unique)</small>
+                                {% else %}
+                                    <form method="post" action="{{ path('app_panier_quantite', {id: ligne.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('panier') }}">
+                                        <input type="number" name="quantite" value="{{ ligne.quantite }}" min="0" max="{{ ligne.produit.stock }}" aria-label="Quantité">
+                                        <button class="bouton bouton--petit bouton--sombre" type="submit">OK</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                            <td>{{ ui.prix(prixLignes[ligne.id]) }}</td>
+                            <td>
+                                <form method="post" action="{{ path('app_panier_retirer', {id: ligne.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('panier') }}">
+                                    <button class="bouton bouton--lien" type="submit">Retirer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="panier__total">
+                <span>Total</span>
+                <strong>{{ ui.prix(total) }}</strong>
+                <button class="bouton" type="button" disabled title="Le paiement sera ajouté dans une prochaine étape">Commander</button>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

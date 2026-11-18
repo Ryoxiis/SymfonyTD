@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Animal;
+use App\Entity\Espece;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,27 @@ class AnimalRepository extends ServiceEntityRepository
         parent::__construct($registry, Animal::class);
     }
 
-//    /**
-//     * @return Animal[] Returns an array of Animal objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * Animaux encore disponibles, filtrés par espèce et/ou mot-clé.
+     *
+     * @return Animal[]
+     */
+    public function rechercher(?Espece $espece = null, ?string $motCle = null): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->andWhere('a.disponible = true')
+            ->orderBy('a.nom', 'ASC');
 
-//    public function findOneBySomeField($value): ?Animal
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($espece) {
+            $qb->andWhere('a.espece = :espece')
+                ->setParameter('espece', $espece);
+        }
+
+        if ($motCle) {
+            $qb->andWhere('a.nom LIKE :motCle OR a.race LIKE :motCle OR a.description LIKE :motCle')
+                ->setParameter('motCle', '%'.$motCle.'%');
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

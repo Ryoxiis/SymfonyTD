@@ -1,0 +1,48 @@
+<footer class="pied">
+    <div class="pied__colonnes">
+        <section>
+            <h4>Plan du site</h4>
+            <div class="pied__plan">
+                <ul>
+                    <li><strong>Boutique</strong></li>
+                    <li><a href="{{ path('app_catalogue') }}">Tous les produits</a></li>
+                    {% for categorie in nav_categories() %}
+                        <li><a href="{{ path('app_catalogue', {categorie: categorie.id}) }}">{{ categorie.nom }}</a></li>
+                    {% endfor %}
+                </ul>
+                <ul>
+                    <li><strong>Espèces</strong></li>
+                    {% for espece in nav_especes() %}
+                        <li><a href="{{ path('app_animaux', {espece: espece.id}) }}">{{ espece.nom }}</a></li>
+                    {% endfor %}
+                </ul>
+                <ul>
+                    <li><strong>Mon compte</strong></li>
+                    <li><a href="{{ path('app_panier') }}">Panier</a></li>
+                    <li><a href="{{ path('app_login') }}">Connexion</a></li>
+                    <li><a href="{{ path('app_register') }}">Inscription</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h4>Rejoindre la conversation</h4>
+            <p><strong>Sur les réseaux</strong><br>Photos de nos pensionnaires, conseils de soigneurs et nouveautés de la boutique.</p>
+            <p><strong>En magasin</strong><br>Retrouvez le Pro Shop et l'atelier Fashion dans notre boutique physique.</p>
+            <p><strong>Conseils véto</strong><br>Une question sur l'alimentation ou la santé de votre animal ? Nos experts vous répondent.</p>
+        </section>
+
+        <section>
+            <h4>Inscription</h4>
+            <p>Créez votre compte : votre panier vous attend à chaque visite.</p>
+            <form class="pied__form" action="{{ path('app_register') }}" method="get">
+                <input type="email" name="email" placeholder="Adresse email" required>
+                <button type="submit" class="bouton bouton--petit">S'inscrire</button>
+            </form>
+        </section>
+    </div>
+    <div class="pied__barre">
+        <span>🌐 Livraison France métropolitaine</span>
+        <span>Confidentialité · Conditions de vente · © {{ 'now'|date('Y') }} Fauna &amp; Co. Tous droits réservés · Photos Unsplash</span>
+    </div>
+</footer>

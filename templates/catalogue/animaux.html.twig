@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+{% import 'partials/_macros.html.twig' as ui %}
+
+{% block title %}Animaux{% endblock %}
+
+{% block body %}
+    <section class="bloc">
+        <h1 class="titre-section">
+            {{ espece ? espece.nom : 'Nos animaux' }}
+            <small>{{ animaux|length }} à adopter</small>
+        </h1>
+
+        <nav class="filtres" aria-label="Espèces">
+            <a href="{{ path('app_animaux') }}" class="{{ espece is null ? 'actif' }}">Toutes</a>
+            {% for e in nav_especes() %}
+                <a href="{{ path('app_animaux', {espece: e.id}) }}" class="{{ espece and espece.id == e.id ? 'actif' }}">{{ e.nom }}</a>
+            {% endfor %}
+        </nav>
+
+        {% if animaux is empty %}
+            <p class="vide">Aucun animal disponible pour le moment.</p>
+        {% else %}
+            <div class="grille">
+                {% for animal in animaux %}
+                    {{ ui.carte(animal, 'animal') }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}
